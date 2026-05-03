@@ -3,181 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bethlehem Plant Care OS - Planta Edition</title>
+    <title>Bethlehem Plant Care OS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root {
-            --planta-green: #388e3c;
-            --planta-light: #f1f8e9;
-            --planta-accent: #8bc34a;
-            --bg: #ffffff;
-            --card-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            --text: #263238;
-        }
-
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #fafafa; 
-            color: var(--text); 
-            margin: 0; 
-            padding-bottom: 80px; 
-        }
-
-        .header { 
-            padding: 40px 20px; 
-            background: white; 
-            border-bottom: 1px solid #eee; 
-            text-align: center;
-        }
-
-        .header h1 { font-size: 28px; margin: 0; color: var(--planta-green); }
-
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-
-        /* Planta-Style Cards */
-        .plant-card {
-            background: white;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            position: relative;
-        }
-
-        .plant-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
-            background: #e0e0e0;
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 30px;
-        }
-
-        .plant-info { flex-grow: 1; }
-        .plant-info h3 { margin: 0; font-size: 18px; }
-        .plant-info p { margin: 5px 0; font-size: 13px; color: #78909c; }
-
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .overdue { background: #ffebee; color: #d32f2f; }
+        :root { --planta: #388e3c; --bg: #f5f5f5; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .info h3 { margin: 0; font-size: 18px; }
+        .info p { margin: 5px 0 0; font-size: 14px; color: #666; }
+        button { background: var(--planta); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .status { font-weight: bold; font-size: 12px; padding: 4px 8px; border-radius: 5px; }
+        .thirsty { background: #ffebee; color: #c62828; }
         .ok { background: #e8f5e9; color: #2e7d32; }
-
-        /* Action Buttons */
-        .action-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: white;
-            padding: 15px 0;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-        }
-
-        .nav-item { text-align: center; color: #b0bec5; cursor: pointer; font-size: 12px; }
-        .nav-item.active { color: var(--planta-green); }
-        .nav-item i { display: block; font-size: 22px; margin-bottom: 4px; }
-
-        /* Task Modal */
-        .log-btn {
-            background: var(--planta-green);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <h1>My Collection</h1>
-    <p id="stats">Checking plant health...</p>
-</div>
-
-<div class="container" id="collection">
+    <div class="container">
+        <h1 style="color: #2e7d32; text-align: center;">My Collection</h1>
+        <div id="plant-list"></div>
     </div>
 
-<div class="action-bar">
-    <div class="nav-item active"><i class="fa-solid fa-leaf"></i>Plants</div>
-    <div class="nav-item"><i class="fa-solid fa-calendar-check"></i>Tasks</div>
-    <div class="nav-item" onclick="exportData()"><i class="fa-solid fa-gear"></i>Settings</div>
-</div>
+    <script>
+        const plants = [
+            { id: 'p1', name: 'ZZ Plant', interval: 40 },
+            { id: 'p2', name: 'String of Pearls', interval: 18 },
+            { id: 'p3', name: 'Pathos', interval: 7 },
+            { id: 'p4', name: 'Rhipsalis', interval: 10 },
+            { id: 'p5', name: 'Brasil', interval: 7 },
+            { id: 'p6', name: 'Snake Plant', interval: 40 },
+            { id: 'p7', name: 'Money Tree', interval: 9 }
+        ];
 
-<script>
-    const plants = [
-        { id: 'p1', name: 'ZZ Plant', room: 'Living Room', icon: '🌿', interval: 40 },
-        { id: 'p2', name: 'String of Pearls', room: 'Window', icon: '🟢', interval: 18 },
-        { id: 'p3', name: 'Pathos', room: 'Shelf', icon: '🍃', interval: 7 },
-        { id: 'p4', name: 'Rhipsalis', room: 'Kitchen', icon: '🌵', interval: 10 },
-        { id: 'p5', name: 'Brasil', room: 'Office', icon: '🍀', interval: 7 },
-        { id: 'p6', name: 'Snake Plant', room: 'Bedroom', icon: '🐍', interval: 40 }
-    ];
+        function render() {
+            const list = document.getElementById('plant-list');
+            list.innerHTML = '';
+            
+            plants.forEach(p => {
+                const last = localStorage.getItem('last_' + p.id);
+                let statusText = 'Need Water';
+                let statusClass = 'thirsty';
+                
+                if (last) {
+                    const diff = Math.floor((new Date() - new Date(last)) / (1000 * 60 * 60 * 24));
+                    const remaining = p.interval - diff;
+                    if (remaining > 0) {
+                        statusText = `OK (${remaining}d left)`;
+                        statusClass = 'ok';
+                    }
+                }
 
-    function calculateStatus(lastDate, interval) {
-        if (!lastDate) return { text: 'Needs Water', class: 'overdue', val: 0 };
-        const diff = Math.floor((new Date() - new Date(lastDate)) / (1000 * 60 * 60 * 24));
-        const remaining = interval - diff;
-        if (remaining <= 0) return { text: 'Overdue', class: 'overdue', val: 100 };
-        return { text: `In ${remaining} days`, class: 'ok', val: (diff / interval) * 100 };
-    }
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="info">
+                        <h3>${p.name}</h3>
+                        <span class="status ${statusClass}">${statusText}</span>
+                    </div>
+                    <button onclick="water('${p.id}')">Log Water</button>
+                `;
+                list.appendChild(card);
+            });
+        }
 
-    function render() {
-        const list = document.getElementById('collection');
-        list.innerHTML = '';
-        let overdueCount = 0;
+        window.water = function(id) {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem('last_' + id, today);
+            render();
+        };
 
-        plants.forEach(p => {
-            const lastWatered = localStorage.getItem('last_' + p.id);
-            const status = calculateStatus(lastWatered, p.interval);
-            if (status.class === 'overdue') overdueCount++;
-
-            const card = document.createElement('div');
-            card.className = 'plant-card';
-            card.innerHTML = `
-                <div class="plant-img">${p.icon}</div>
-                <div class="plant-info">
-                    <h3>${p.name}</h3>
-                    <p>${p.room}</p>
-                    <span class="status-badge ${status.class}">${status.text}</span>
-                </div>
-                <button class="log-btn" onclick="water('${p.id}')"><i class="fa-solid fa-droplet"></i></button>
-            `;
-            list.appendChild(card);
-        });
-
-        document.getElementById('stats').innerText = overdueCount > 0 ? 
-            `${overdueCount} plants need attention today` : "Everything looks great!";
-    }
-
-    function water(id) {
-        localStorage.setItem('last_' + id, new Date().toISOString().split('T')[0]);
         render();
-    }
-
-    function exportData() {
-        alert("JSON Export ready in Console! (F12)");
-        console.log(JSON.stringify(localStorage));
-    }
-
-    render();
-</script>
-
+    </script>
 </body>
 </html>
